@@ -1334,8 +1334,10 @@ href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
 
     // محاولة استرجاع جلسة Google أو Supabase
     const { data: { session } } = await supabaseClient.auth.getSession();
-updateProfileAvatar(session.user);
-    if (session && session.user) {
+updateProfileAvatar(
+    session.user,
+    currentUser.username
+);    if (session && session.user) {
 
         const authUser = session.user;
 
@@ -1840,36 +1842,25 @@ function updateProfileAvatar(user, username = "") {
     // صورة جوجل
     if(picture){
 
-        avatar.innerHTML = `
-            <img
-                src="${picture}"
-                style="
-                    width:100%;
-                    height:100%;
-                    object-fit:cover;
-                    border-radius:50%;
-                "
-            >
-        `;
+        avatar.src = picture;
+        avatar.style.display = "block";
 
         if(mobileAvatar){
 
-            mobileAvatar.innerHTML = `
-                <img
-                    src="${picture}"
-                    style="
-                        width:100%;
-                        height:100%;
-                        object-fit:cover;
-                        border-radius:50%;
-                    "
-                >
-            `;
+            mobileAvatar.src = picture;
+            mobileAvatar.style.display = "block";
         }
 
         return;
     }
 
+    // لو مفيش صورة
+    avatar.src = "";
+
+    if(mobileAvatar){
+        mobileAvatar.src = "";
+    }
+}
     // أول حرفين من الاسم
     let text = "U";
 
@@ -1892,7 +1883,7 @@ function updateProfileAvatar(user, username = "") {
     if(mobileAvatar){
         mobileAvatar.innerHTML = text;
     }
-}
+
 
    
         async function openProfile() {
