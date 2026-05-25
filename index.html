@@ -1336,8 +1336,8 @@ href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
     const { data: { session } } = await supabaseClient.auth.getSession();
 updateProfileAvatar(
     session.user,
-    currentUser.username
-);    if (session && session.user) {
+    currentUser?.username || ""
+);   if (session && session.user) {
 
         const authUser = session.user;
 
@@ -1864,14 +1864,13 @@ function updateProfileAvatar(user, username = "") {
     // أول حرفين من الاسم
     let text = "U";
 
-    if(username){
+ if(typeof username === "string"){
 
-        text = username
-            .trim()
-            .substring(0,2)
-            .toUpperCase();
-
-    } else if(user?.email){
+    text = username
+        .trim()
+        .substring(0,2)
+        .toUpperCase();
+} else if(user?.email){
 
         text = user.email
             .substring(0,2)
