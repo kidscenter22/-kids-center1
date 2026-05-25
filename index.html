@@ -772,8 +772,7 @@ href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
 
           <div style="display:flex;align-items:center;gap:12px;">
 
-  <img id="profileAvatar"
-     src=""
+<div id="profileAvatar">     src=""
      style="
         width:45px;
         height:45px;
@@ -790,6 +789,7 @@ href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
         box-shadow:0 4px 12px rgba(0,0,0,0.15);
         object-fit:cover;
      ">
+     </div>
 
     <div class="coins-box">
         🪙 Coins: <span id="coinsCount">0</span>
@@ -1379,24 +1379,24 @@ updateProfileAvatar(
   
 
     // الحساب العادي
-    const savedUser =
-        localStorage.getItem("savedUser");
+const savedUser =
+    localStorage.getItem("savedUser");
 
-    if (savedUser) {
+if(savedUser){
 
-        currentUser = JSON.parse(savedUser);
+    currentUser = JSON.parse(savedUser);
 
-        coins = currentUser.coins || 0;
+    coins = currentUser.coins || 0;
 
-        updateCoinsUI();
+    updateCoinsUI();
 
-        updateProfileAvatar(
-            null,
-            currentUser.username
-        );
+    updateProfileAvatar(
+        null,
+        currentUser.username || ""
+    );
 
-        showPage("mainPage");
-    }
+    showPage("mainPage");
+}
 };
 
     // تسجيل الدخول العادي
@@ -1835,30 +1835,83 @@ function updateProfileAvatar(user, username = "") {
 
     if(!avatar) return;
 
-    const picture =
-        user?.user_metadata?.picture ||
-        user?.identities?.[0]?.identity_data?.picture;
+    let text = "U";
 
-    // صورة جوجل
-    if(picture){
+    // اسم الحساب العادي
+    if(typeof username === "string" && username.trim() !== ""){
 
-        avatar.src = picture;
-        avatar.style.display = "block";
-
-        if(mobileAvatar){
-
-            mobileAvatar.src = picture;
-            mobileAvatar.style.display = "block";
-        }
-
-        return;
+        text = username
+            .trim()
+            .substring(0,2)
+            .toUpperCase();
     }
 
-    // لو مفيش صورة
+    // اسم جوجل
+    else if(user?.user_metadata?.full_name){
+
+        text = user.user_metadata.full_name
+            .trim()
+            .substring(0,2)
+            .toUpperCase();
+    }
+
+    // إيميل جوجل
+    else if(user?.email){
+
+        text = user.email
+            .substring(0,2)
+            .toUpperCase();
+    }
+
+    // الشكل
     avatar.src = "";
 
+    avatar.style.background = "#2a5298";
+    avatar.style.display = "flex";
+    avatar.style.alignItems = "center";
+    avatar.style.justifyContent = "center";
+
+    avatar.outerHTML = `
+        <div id="profileAvatar"
+             style="
+                width:45px;
+                height:45px;
+                border-radius:50%;
+                background:#2a5298;
+                color:white;
+                display:flex;
+                align-items:center;
+                justify-content:center;
+                font-weight:bold;
+                font-size:18px;
+                overflow:hidden;
+                border:2px solid white;
+                box-shadow:0 4px 12px rgba(0,0,0,0.15);
+             ">
+             ${text}
+        </div>
+    `;
+
     if(mobileAvatar){
-        mobileAvatar.src = "";
+
+        mobileAvatar.outerHTML = `
+            <div id="mobileProfileAvatar"
+                 style="
+                    width:45px;
+                    height:45px;
+                    border-radius:50%;
+                    background:#2a5298;
+                    color:white;
+                    display:flex;
+                    align-items:center;
+                    justify-content:center;
+                    font-weight:bold;
+                    font-size:18px;
+                    overflow:hidden;
+                 ">
+                 ${text}
+            </div>
+        `;
     }
 }
     // أول حرفين من الاسم
