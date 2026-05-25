@@ -1374,40 +1374,7 @@ updateProfileAvatar(session.user);
     }
 
     // تسجيل الدخول العادي القديم
-  window.onload = async () => {
-
-    // Google Session
-    const {
-        data: { session }
-    } = await supabaseClient.auth.getSession();
-
-    if (session && session.user) {
-
-        const email = session.user.email;
-
-        const { data: existingUser } =
-            await supabaseClient
-                .from("users")
-                .select("*")
-                .eq("username", email);
-
-        if (existingUser && existingUser.length > 0) {
-
-            currentUser = existingUser[0];
-            coins = currentUser.coins || 0;
-
-            updateCoinsUI();
-
-            updateProfileAvatar(
-                session.user,
-                currentUser.username
-            );
-
-            showPage("mainPage");
-
-            return;
-        }
-    }
+  
 
     // الحساب العادي
     const savedUser =
@@ -1430,8 +1397,6 @@ updateProfileAvatar(session.user);
     }
 };
 
-
-};
     // تسجيل الدخول العادي
  
         function updateCoinsUI() {
@@ -1463,8 +1428,10 @@ updateProfileAvatar(session.user);
             if (!data || data.length === 0) return alert("Invalid Username or Password");
             currentUser = data[0]; coins = currentUser.coins || 0;
            updateProfileAvatar(null, currentUser.username);
-           localStorage.setItem("savedUser", JSON.stringify({ id: currentUser.id }));
-            updateCoinsUI(); showPage("mainPage");
+localStorage.setItem(
+    "savedUser",
+    JSON.stringify(currentUser)
+);            updateCoinsUI(); showPage("mainPage");
         }
 
 async function logout() {
@@ -1739,8 +1706,7 @@ async function googleLogin() {
     const { error } = await supabaseClient.auth.signInWithOAuth({
         provider: 'google',
         options: {
-            redirectTo: 'http://127.0.0.1:5500'
-        }
+redirectTo: 'https://kidscenter22.github.io/-kids-center1/'        }
     });
 
     if(error){
@@ -1859,32 +1825,53 @@ await supabaseClient
         }
 function updateProfileAvatar(user, username = "") {
 
-    const avatar = document.getElementById("profileAvatar");
+    const avatar =
+        document.getElementById("profileAvatar");
+
+    const mobileAvatar =
+        document.getElementById("mobileProfileAvatar");
 
     if(!avatar) return;
 
-    // صورة جوجل
     const picture =
         user?.user_metadata?.picture ||
         user?.identities?.[0]?.identity_data?.picture;
 
-    // لو توجد صورة
+    // صورة جوجل
     if(picture){
 
         avatar.innerHTML = `
-            <img src="${picture}"
-                 style="
+            <img
+                src="${picture}"
+                style="
                     width:100%;
                     height:100%;
                     object-fit:cover;
-                 ">
+                    border-radius:50%;
+                "
+            >
         `;
+
+        if(mobileAvatar){
+
+            mobileAvatar.innerHTML = `
+                <img
+                    src="${picture}"
+                    style="
+                        width:100%;
+                        height:100%;
+                        object-fit:cover;
+                        border-radius:50%;
+                    "
+                >
+            `;
+        }
 
         return;
     }
 
     // أول حرفين من الاسم
-    let text = "";
+    let text = "U";
 
     if(username){
 
@@ -1898,14 +1885,16 @@ function updateProfileAvatar(user, username = "") {
         text = user.email
             .substring(0,2)
             .toUpperCase();
-
-    } else {
-
-        text = "U";
     }
 
     avatar.innerHTML = text;
+
+    if(mobileAvatar){
+        mobileAvatar.innerHTML = text;
+    }
 }
+
+   
         async function openProfile() {
             showPage("profilePage"); const rank = ranks.find(r => coins >= r.min && coins <= r.max) || ranks[0];
             document.getElementById("profileTrophy").innerHTML = rank.trophy;
@@ -2047,14 +2036,7 @@ if(session && session.user){
     list.innerHTML = html;
 }
 // صورة البروفايل من جوجل
-if(authUser.user_metadata.picture){
 
-    const avatar = document.getElementById("profileAvatar");
-
-    avatar.src = authUser.user_metadata.picture;
-
-    avatar.style.display = "block";
-}
         function showPage(id) {
             document.querySelectorAll(".page").forEach(p => p.classList.remove("active-page"));
             if(document.getElementById(id)) document.getElementById(id).classList.add("active-page");
