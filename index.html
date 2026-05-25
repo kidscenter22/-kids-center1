@@ -1739,8 +1739,19 @@ redirectTo: 'https://kidscenter22.github.io/-kids-center1/'        }
             if (input.value.trim() !== "") {
                 const userAns = parseFloat(input.value);
                 let corr = q.isDecimal ? userAns.toFixed(q.decimals) === currentAnswer.toFixed(q.decimals) : userAns === currentAnswer;
-                if (corr) { correctAnswersCount++; if(!isTrainingMode) earnedTotalCoins += q.weight; }
-            }
+if (corr) {
+
+    q.earned = q.weight;
+
+    correctAnswersCount++;
+
+    if(!isTrainingMode)
+        earnedTotalCoins += q.weight;
+
+} else {
+
+    q.earned = 0;
+}        }
             currentQuiz++; showQuestion();
         }
 
@@ -1754,46 +1765,90 @@ let updateData = {
 
 // توزيع النقاط حسب النوع
 
+// quizList.forEach(q => {
+
+    // if(q.weight){
+
+    //     // Decimal
+    //     if(q.isDecimal){
+
+    //         currentUser.dec_coins =
+    //             (currentUser.dec_coins || 0)
+    //             + q.weight;
+
+    //     }
+
+    //     // Multiplication
+    //     else if(q.text?.includes("×")){
+
+    //         currentUser.mul_coins =
+    //             (currentUser.mul_coins || 0)
+    //             + q.weight;
+
+    //     }
+
+    //     // Division
+    //     else if(q.text?.includes("÷")){
+
+    //         currentUser.div_coins =
+    //             (currentUser.div_coins || 0)
+    //             + q.weight;
+
+    //     }
+
+    //     // Add & Sub
+    //     else {
+
+    //         currentUser.add_coins =
+    //             (currentUser.add_coins || 0)
+    //             + q.weight;
+    //     }
+    // }
+  let earnedAdd = 0;
+let earnedMul = 0;
+let earnedDiv = 0;
+let earnedDec = 0;
+
 quizList.forEach(q => {
 
-    if(q.weight){
+    const points = q.earned || 0;
 
-        // Decimal
-        if(q.isDecimal){
+    // Decimal
+    if(q.isDecimal){
 
-            currentUser.dec_coins =
-                (currentUser.dec_coins || 0)
-                + q.weight;
+        earnedDec += points;
+    }
 
-        }
+    // Multiplication
+    else if(q.text?.includes("×")){
 
-        // Multiplication
-        else if(q.text?.includes("×")){
+        earnedMul += points;
+    }
 
-            currentUser.mul_coins =
-                (currentUser.mul_coins || 0)
-                + q.weight;
+    // Division
+    else if(q.text?.includes("÷")){
 
-        }
+        earnedDiv += points;
+    }
 
-        // Division
-        else if(q.text?.includes("÷")){
+    // Add & Sub
+    else {
 
-            currentUser.div_coins =
-                (currentUser.div_coins || 0)
-                + q.weight;
-
-        }
-
-        // Add & Sub
-        else {
-
-            currentUser.add_coins =
-                (currentUser.add_coins || 0)
-                + q.weight;
-        }
+        earnedAdd += points;
     }
 });
+
+currentUser.add_coins =
+    (currentUser.add_coins || 0) + earnedAdd;
+
+currentUser.mul_coins =
+    (currentUser.mul_coins || 0) + earnedMul;
+
+currentUser.div_coins =
+    (currentUser.div_coins || 0) + earnedDiv;
+
+currentUser.dec_coins =
+    (currentUser.dec_coins || 0) + earnedDec;
 
 updateData.add_coins =
     currentUser.add_coins || 0;
